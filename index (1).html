@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Anindya — Builder / Trader / Lifter</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,600&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg: #060912;
+    --bg-alt: #0B0F1F;
+    --bg-card: #0F1428;
+    --line: rgba(212,175,55,0.14);
+    --line-strong: rgba(212,175,55,0.32);
+    --text: #F3F0E6;
+    --text-muted: #8B93B0;
+    --accent-1: #3457D5; /* royal blue */
+    --accent-2: #D4AF37; /* gold */
+    --accent-3: #1E3A8A; /* deep royal blue */
+    --gold-bright: #F4D160; /* shimmer highlight */
+    --green: #F4D160;
+    --font-display: 'Playfair Display', serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important; }
+  }
+  a{ color:inherit; text-decoration:none; }
+  ::selection{ background: var(--accent-1); color:#080B15; }
+
+  .wrap{ max-width:1160px; margin:0 auto; padding:0 28px; }
+
+  /* ---------- NAV ---------- */
+  header{
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    background: rgba(10,14,20,0.72);
+    backdrop-filter: blur(10px);
+    border-bottom:1px solid var(--line);
+  }
+  nav.wrap{
+    display:flex; align-items:center; justify-content:space-between;
+    height:66px;
+  }
+  .logo{
+    font-family: var(--font-mono);
+    font-weight:600;
+    font-size:15px;
+    letter-spacing:0.5px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .logo .dot{
+    width:7px; height:7px; border-radius:50%;
+    background: var(--accent-1);
+    box-shadow: 0 0 10px var(--accent-1);
+  }
+  .nav-links{
+    display:flex; gap:34px; font-size:14px; font-weight:500; color:var(--text-muted);
+  }
+  .nav-links a{ transition: color .2s; position:relative; }
+  .nav-links a:hover, .nav-links a:focus-visible{ color: var(--text); outline:none; }
+  .nav-links a::after{
+    content:''; position:absolute; left:0; bottom:-6px; width:0; height:1px;
+    background: var(--accent-2); transition: width .25s;
+  }
+  .nav-links a:hover::after{ width:100%; }
+  .nav-toggle{ display:none; background:none; border:1px solid var(--line-strong); border-radius:8px; width:38px; height:38px; color:var(--text); font-size:18px; cursor:pointer; }
+
+  @media (max-width: 760px){
+    .nav-links{
+      position:fixed; top:66px; right:0; left:0;
+      flex-direction:column; gap:0;
+      background: var(--bg-alt);
+      border-bottom:1px solid var(--line);
+      max-height:0; overflow:hidden;
+      transition: max-height .3s ease;
+    }
+    .nav-links.open{ max-height:320px; }
+    .nav-links a{ padding:16px 28px; border-top:1px solid var(--line); }
+    .nav-toggle{ display:block; }
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    min-height:100vh;
+    display:flex; flex-direction:column; justify-content:center;
+    padding-top:66px;
+    overflow:hidden;
+  }
+  .horizon-svg{
+    position:absolute; inset:0; width:100%; height:100%;
+    opacity:0.9;
+    pointer-events:none;
+  }
+  .hero-glow{
+    position:absolute; bottom:-10%; left:50%; transform:translateX(-50%);
+    width:900px; height:900px; max-width:140vw;
+    background: radial-gradient(circle, rgba(52,87,213,0.22) 0%, rgba(212,175,55,0.10) 35%, transparent 70%);
+    pointer-events:none;
+  }
+  .hero-content{ position:relative; z-index:2; }
+  .eyebrow{
+    font-family: var(--font-mono);
+    font-size:12.5px; letter-spacing:2px; text-transform:uppercase;
+    color: var(--accent-2);
+    display:flex; align-items:center; gap:10px;
+    margin-bottom:22px;
+    opacity:0; animation: fadeUp .7s ease .1s forwards;
+  }
+  .eyebrow::before{ content:''; width:26px; height:1px; background:var(--accent-2); }
+  h1.title{
+    font-family: var(--font-display);
+    font-weight:700;
+    font-size: clamp(40px, 7vw, 84px);
+    line-height:1.03;
+    letter-spacing:-1.5px;
+    max-width:900px;
+    opacity:0; animation: fadeUp .8s ease .25s forwards;
+  }
+  h1.title .grad{
+    background: linear-gradient(100deg, var(--accent-1), var(--accent-2) 60%, var(--accent-3));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .hero-sub{
+    margin-top:26px; max-width:560px;
+    font-size:17px; color: var(--text-muted);
+    opacity:0; animation: fadeUp .8s ease .4s forwards;
+  }
+  .hero-cta{
+    margin-top:40px; display:flex; gap:16px; flex-wrap:wrap;
+    opacity:0; animation: fadeUp .8s ease .55s forwards;
+  }
+  .btn{
+    font-family: var(--font-mono);
+    font-size:13.5px; font-weight:500;
+    padding:14px 26px; border-radius:9px;
+    display:inline-flex; align-items:center; gap:8px;
+    transition: transform .2s, box-shadow .2s, background .2s;
+  }
+  .btn-primary{
+    background: linear-gradient(100deg, var(--accent-1), var(--accent-2));
+    color:#080B15; font-weight:600;
+  }
+  .btn-primary:hover{ transform: translateY(-2px); box-shadow: 0 10px 30px rgba(212,175,55,0.28); }
+  .btn-ghost{
+    border:1px solid var(--line-strong); color: var(--text);
+  }
+  .btn-ghost:hover{ border-color: var(--accent-2); background: rgba(212,175,55,0.08); }
+
+  @keyframes fadeUp{
+    from{ opacity:0; transform: translateY(18px); }
+    to{ opacity:1; transform: translateY(0); }
+  }
+
+  .scroll-cue{
+    position:absolute; bottom:34px; left:50%; transform:translateX(-50%);
+    font-family: var(--font-mono); font-size:11px; color: var(--text-muted);
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+    opacity:0; animation: fadeUp .8s ease .8s forwards;
+  }
+  .scroll-cue .line{
+    width:1px; height:30px;
+    background: linear-gradient(var(--accent-2), transparent);
+    animation: pulse-line 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse-line{ 0%,100%{ opacity:.4; } 50%{ opacity:1; } }
+
+  /* ---------- SECTION SHARED ---------- */
+  section{ padding:120px 0; position:relative; }
+  .sec-label{
+    font-family: var(--font-mono); font-size:12.5px; letter-spacing:2px;
+    text-transform:uppercase; color: var(--accent-2);
+    display:flex; align-items:center; gap:10px; margin-bottom:16px;
+  }
+  .sec-label::before{ content:''; width:26px; height:1px; background:var(--accent-2); }
+  h2.sec-title{
+    font-family: var(--font-display); font-weight:600;
+    font-size: clamp(28px, 4vw, 44px);
+    letter-spacing:-0.5px;
+    max-width:640px;
+    margin-bottom:20px;
+  }
+  .sec-intro{ color: var(--text-muted); max-width:600px; font-size:16px; }
+
+  .reveal{ opacity:0; transform: translateY(24px); transition: opacity .7s ease, transform .7s ease; }
+  .reveal.in{ opacity:1; transform:none; }
+
+  /* ---------- ABOUT ---------- */
+  #about{ background: var(--bg-alt); border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+  .about-grid{
+    display:grid; grid-template-columns: 1.1fr 0.9fr; gap:64px; align-items:start; margin-top:50px;
+  }
+  @media (max-width:820px){ .about-grid{ grid-template-columns:1fr; gap:40px; } }
+  .about-body p{ color: var(--text-muted); font-size:16px; margin-bottom:18px; }
+  .about-body strong{ color: var(--text); font-weight:600; }
+  .stat-row{
+    display:grid; grid-template-columns:1fr 1fr; gap:1px;
+    background: var(--line); border:1px solid var(--line); border-radius:12px; overflow:hidden;
+  }
+  .stat{ background: var(--bg-card); padding:24px; }
+  .stat .n{ font-family:var(--font-mono); font-size:26px; font-weight:600; color: var(--accent-2); }
+  .stat .l{ font-size:12.5px; color: var(--text-muted); margin-top:6px; }
+
+  .stack{ margin-top:34px; display:flex; flex-wrap:wrap; gap:10px; }
+  .chip{
+    font-family: var(--font-mono); font-size:12.5px;
+    border:1px solid var(--line-strong); border-radius:100px;
+    padding:8px 16px; color: var(--text-muted);
+    transition: border-color .2s, color .2s;
+  }
+  .chip:hover{ border-color: var(--accent-1); color: var(--text); }
+
+  /* ---------- PROJECTS ---------- */
+  .proj-grid{
+    margin-top:56px;
+    display:grid; grid-template-columns: repeat(2, 1fr); gap:20px;
+  }
+  @media (max-width:820px){ .proj-grid{ grid-template-columns:1fr; } }
+  .card{
+    background: var(--bg-card);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:30px;
+    position:relative;
+    overflow:hidden;
+    transition: border-color .25s, transform .25s;
+  }
+  .card:hover{ border-color: var(--line-strong); transform: translateY(-4px); }
+  .card::before{
+    content:''; position:absolute; top:0; left:0; right:0; height:2px;
+    background: linear-gradient(90deg, var(--accent-1), var(--accent-2), var(--accent-3));
+    opacity:0; transition: opacity .25s;
+  }
+  .card:hover::before{ opacity:1; }
+  .card .tag{
+    font-family: var(--font-mono); font-size:11px; letter-spacing:1px; text-transform:uppercase;
+    color: var(--accent-1); margin-bottom:14px; display:inline-block;
+  }
+  .card h3{ font-family: var(--font-display); font-size:21px; font-weight:600; margin-bottom:10px; }
+  .card p{ color: var(--text-muted); font-size:14.5px; margin-bottom:18px; }
+  .card .stack-mini{ display:flex; flex-wrap:wrap; gap:8px; }
+  .card .stack-mini span{
+    font-family: var(--font-mono); font-size:11px; color: var(--text-muted);
+    border:1px solid var(--line); border-radius:6px; padding:4px 9px;
+  }
+  .card.featured{ grid-column: span 2; }
+  @media (max-width:820px){ .card.featured{ grid-column: span 1; } }
+
+  /* ---------- TRADING ---------- */
+  #trading{ background: var(--bg-alt); border-top:1px solid var(--line); border-bottom:1px solid var(--line); }
+  .ticker-strip{
+    margin-top:44px;
+    border:1px solid var(--line); border-radius:14px;
+    background: var(--bg-card);
+    padding:0; overflow:hidden;
+  }
+  .ticker-head{
+    display:flex; justify-content:space-between; align-items:center;
+    padding:18px 24px; border-bottom:1px solid var(--line);
+    font-family:var(--font-mono); font-size:13px;
+  }
+  .ticker-head .pair{ color: var(--text); font-weight:600; letter-spacing:0.5px; }
+  .ticker-head .status{ color: var(--text-muted); display:flex; align-items:center; gap:8px; }
+  .ticker-head .status .pulse{
+    width:7px; height:7px; border-radius:50%; background: var(--green);
+    box-shadow:0 0 8px var(--green);
+  }
+  .chart-svg{ display:block; width:100%; height:auto; }
+  .trading-note{
+    padding:22px 24px; border-top:1px solid var(--line);
+    color: var(--text-muted); font-size:14.5px;
+  }
+
+  /* ---------- FITNESS ---------- */
+  .fitness-wrap{
+    margin-top:44px; display:grid; grid-template-columns: 1fr 1fr; gap:24px;
+  }
+  @media (max-width:760px){ .fitness-wrap{ grid-template-columns:1fr; } }
+  .fitness-card{
+    border:1px solid var(--line); border-radius:14px; padding:28px; background: var(--bg-card);
+  }
+  .fitness-card .num{ font-family:var(--font-mono); color:var(--accent-1); font-size:12.5px; margin-bottom:10px; display:block; }
+  .fitness-card h4{ font-family:var(--font-display); font-size:18px; margin-bottom:10px; }
+  .fitness-card p{ color:var(--text-muted); font-size:14.5px; }
+
+  /* ---------- CONTACT ---------- */
+  footer{
+    padding:110px 0 50px;
+    position:relative;
+    background: linear-gradient(180deg, var(--bg) 0%, #0A0E1E 100%);
+  }
+  .contact-inner{ text-align:center; max-width:640px; margin:0 auto; }
+  .contact-inner h2{
+    font-family:var(--font-display); font-weight:700;
+    font-size: clamp(30px, 5vw, 52px); letter-spacing:-1px; margin-bottom:20px;
+  }
+  .contact-inner p{ color:var(--text-muted); font-size:16px; margin-bottom:36px; }
+  .contact-links{ display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin-bottom:70px; }
+  .foot-bottom{
+    display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;
+    padding-top:28px; border-top:1px solid var(--line);
+    font-family:var(--font-mono); font-size:12px; color: var(--text-muted);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <nav class="wrap">
+    <div class="logo"><span class="dot"></span>ANINDYA</div>
+    <div class="nav-links" id="navLinks">
+      <a href="#about">About</a>
+      <a href="#work">Work</a>
+      <a href="#trading">Trading</a>
+      <a href="#fitness">Fitness</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">☰</button>
+  </nav>
+</header>
+
+<section class="hero">
+  <svg class="horizon-svg" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+    <defs>
+      <linearGradient id="horizonLine" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#4169E1"/>
+        <stop offset="55%" stop-color="#D4AF37"/>
+        <stop offset="100%" stop-color="#1E3A8A"/>
+      </linearGradient>
+      <linearGradient id="fillFade" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#D4AF37" stop-opacity="0.14"/>
+        <stop offset="100%" stop-color="#D4AF37" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <!-- horizon line built from a candlestick silhouette -->
+    <path d="M0,430 L60,430 L60,370 L90,370 L90,430 L150,430 L150,310 L180,310 L180,430 L240,430 L240,260 L270,260 L270,430 L330,430 L330,340 L360,340 L360,430 L420,430 L420,200 L450,200 L450,430 L510,430 L510,290 L540,290 L540,430 L600,430 L600,150 L630,150 L630,430 L690,430 L690,240 L720,240 L720,430 L780,430 L780,120 L810,120 L810,430 L870,430 L870,260 L900,260 L900,430 L960,430 L960,180 L990,180 L990,430 L1050,430 L1050,300 L1080,300 L1080,430 L1140,430 L1140,220 L1170,220 L1170,430 L1200,430 L1200,700 L0,700 Z"
+      fill="url(#fillFade)" opacity="0.7"/>
+    <path d="M0,430 L60,430 L60,370 L90,370 L90,430 L150,430 L150,310 L180,310 L180,430 L240,430 L240,260 L270,260 L270,430 L330,430 L330,340 L360,340 L360,430 L420,430 L420,200 L450,200 L450,430 L510,430 L510,290 L540,290 L540,430 L600,430 L600,150 L630,150 L630,430 L690,430 L690,240 L720,240 L720,430 L780,430 L780,120 L810,120 L810,430 L870,430 L870,260 L900,260 L900,430 L960,430 L960,180 L990,180 L990,430 L1050,430 L1050,300 L1080,300 L1080,430 L1140,430 L1140,220 L1170,220 L1170,430"
+      fill="none" stroke="url(#horizonLine)" stroke-width="2" opacity="0.55"/>
+  </svg>
+  <div class="hero-glow"></div>
+
+  <div class="wrap hero-content">
+    <div class="eyebrow">Student · Builder · Trader · Lifter</div>
+    <h1 class="title">Shipping code by day,<br>watching <span class="grad">XAUUSD</span> and<br>chasing PRs by night.</h1>
+    <p class="hero-sub">I'm Anindya — a student and self-taught developer. I build web platforms, desktop tools, and AI systems from scratch, chart gold on the side, and treat the gym as non-negotiable.</p>
+    <div class="hero-cta">
+      <a href="#work" class="btn btn-primary">View My Work →</a>
+      <a href="#contact" class="btn btn-ghost">Get In Touch</a>
+    </div>
+  </div>
+
+  <div class="scroll-cue"><span>SCROLL</span><span class="line"></span></div>
+</section>
+
+<section id="about">
+  <div class="wrap">
+    <div class="sec-label">01 — About</div>
+    <h2 class="sec-title reveal">Still early in the journey. Already building like it's the job.</h2>
+
+    <div class="about-grid">
+      <div class="about-body reveal">
+        <p>I'm a student and beginner developer, but "beginner" undersells what's actually shipping — <strong>a live tuition platform, a Python desktop utility, a voice assistant with a custom-built GUI, computer vision experiments, and a clothing brand</strong>, all running in parallel.</p>
+        <p>Most of what I know, I picked up by building: debugging virtual environment conflicts at 1am, wiring up Firebase auth, fighting PowerShell execution policies, and rewriting UI until it stops looking like a template.</p>
+        <p>Outside of code, I trade — <strong>XAUUSD is my pair of choice</strong> — and I lift. Both taught me the same lesson code did: discipline compounds, and there's no shortcut around reps.</p>
+        <div class="stack">
+          <span class="chip">React</span>
+          <span class="chip">Java</span>
+          <span class="chip">Python</span>
+          <span class="chip">Node.js</span>
+          <span class="chip">Firebase</span>
+          <span class="chip">OpenCV</span>
+        </div>
+      </div>
+
+      <div class="reveal">
+        <div class="stat-row">
+          <div class="stat"><div class="n">6+</div><div class="l">Active projects in rotation</div></div>
+          <div class="stat"><div class="n">1</div><div class="l">Clothing brand — Fleximo</div></div>
+          <div class="stat"><div class="n">XAU</div><div class="l">Favorite pair to chart</div></div>
+          <div class="stat"><div class="n">0</div><div class="l">Missed leg days (allegedly)</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="work">
+  <div class="wrap">
+    <div class="sec-label">02 — Work</div>
+    <h2 class="sec-title reveal">Projects, in various stages of "almost done."</h2>
+    <p class="sec-intro reveal">A mix of web platforms, desktop tools, and systems-level experiments — most built as single, self-contained codebases so they're easy to pick up and keep iterating on.</p>
+
+    <div class="proj-grid">
+      <div class="card featured reveal">
+        <span class="tag">Voice Assistant</span>
+        <h3>O.M.E.G.A.</h3>
+        <p>Omniscient Modular Engine for General Assistance — a Python voice assistant with a deep-space dark GUI, an animated ReactorCore canvas widget, and chat-bubble interaction. Runs on Groq's llama-3.1-8b-instant for reasoning, with speech recognition, PowerShell-based TTS, and pyautogui for system control.</p>
+        <div class="stack-mini"><span>Python</span><span>Groq API</span><span>Speech Recognition</span><span>Custom GUI</span></div>
+      </div>
+
+      <div class="card reveal">
+        <span class="tag">Web App</span>
+        <h3>IRON_LOG</h3>
+        <p>A single-HTML-file fitness tracker: cardio-aware exercise logging with editable set counts, an ml-based water intake system on localStorage, a history editing modal, and a reporting page with date-range summaries.</p>
+        <div class="stack-mini"><span>HTML/CSS/JS</span><span>localStorage</span></div>
+      </div>
+
+      <div class="card reveal">
+        <span class="tag">Web Platform</span>
+        <h3>Aspires Hub</h3>
+        <p>A tuition website with student dashboards, offline course pages, and account management. Horizon-inspired styling, Firebase Authentication with OTP, Firestore-backed user data, and a fully responsive sidebar with dynamic content switching.</p>
+        <div class="stack-mini"><span>Firebase</span><span>Firestore</span><span>Responsive UI</span></div>
+      </div>
+
+      <div class="card reveal">
+        <span class="tag">Desktop Utility</span>
+        <h3>Drive Manager Pro</h3>
+        <p>A ~900-line single-file Python utility for disk and file management — live system dashboard, SHA256 duplicate finder, folder sync, a real-time file watcher, batch renamer, and task scheduler.</p>
+        <div class="stack-mini"><span>customtkinter</span><span>psutil</span><span>watchdog</span></div>
+      </div>
+
+      <div class="card reveal">
+        <span class="tag">Computer Vision</span>
+        <h3>Face & Hand Recognition</h3>
+        <p>Real-time face detection and hand gesture recognition built on OpenCV and MediaPipe, running in a pinned Python 3.11 environment for stability across dependency versions.</p>
+        <div class="stack-mini"><span>OpenCV</span><span>MediaPipe</span><span>Python 3.11</span></div>
+      </div>
+
+      <div class="card reveal">
+        <span class="tag">Brand</span>
+        <h3>Fleximo</h3>
+        <p>A clothing brand built around a skeleton-and-lightning motif, carried through graphic tee designs. Part of the same build-it-myself approach applied to a physical product line.</p>
+        <div class="stack-mini"><span>Brand Design</span><span>Apparel</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="trading">
+  <div class="wrap">
+    <div class="sec-label">03 — Trading</div>
+    <h2 class="sec-title reveal">Charts on one monitor, code on the other.</h2>
+    <p class="sec-intro reveal">Gold's always been the pair that pulled my attention hardest — the volatility, the macro story behind every candle. I've stepped back from active trading for now, but the habit of reading a chart never really switches off.</p>
+
+    <div class="ticker-strip reveal">
+      <div class="ticker-head">
+        <span class="pair">XAUUSD · GOLD / USD</span>
+        <span class="status"><span class="pulse"></span>Favorite pair</span>
+      </div>
+      <svg class="chart-svg" viewBox="0 0 1100 220" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="candleUp" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#D4AF37"/>
+            <stop offset="100%" stop-color="#D4AF37" stop-opacity="0.3"/>
+          </linearGradient>
+        </defs>
+        <line x1="0" y1="55" x2="1100" y2="55" stroke="rgba(255,255,255,0.06)"/>
+        <line x1="0" y1="110" x2="1100" y2="110" stroke="rgba(255,255,255,0.06)"/>
+        <line x1="0" y1="165" x2="1100" y2="165" stroke="rgba(255,255,255,0.06)"/>
+        <g stroke-width="2">
+          <line x1="40" y1="150" x2="40" y2="90" stroke="#D4AF37"/><rect x="34" y="100" width="12" height="40" fill="#D4AF37"/>
+          <line x1="80" y1="140" x2="80" y2="70" stroke="#D4AF37"/><rect x="74" y="80" width="12" height="45" fill="#D4AF37"/>
+          <line x1="120" y1="120" x2="120" y2="60" stroke="#4169E1"/><rect x="114" y="60" width="12" height="35" fill="#4169E1"/>
+          <line x1="160" y1="130" x2="160" y2="95" stroke="#D4AF37"/><rect x="154" y="100" width="12" height="25" fill="#D4AF37"/>
+          <line x1="200" y1="150" x2="200" y2="70" stroke="#D4AF37"/><rect x="194" y="80" width="12" height="55" fill="#D4AF37"/>
+          <line x1="240" y1="90" x2="240" y2="40" stroke="#4169E1"/><rect x="234" y="40" width="12" height="35" fill="#4169E1"/>
+          <line x1="280" y1="100" x2="280" y2="60" stroke="#D4AF37"/><rect x="274" y="65" width="12" height="30" fill="#D4AF37"/>
+          <line x1="320" y1="140" x2="320" y2="80" stroke="#D4AF37"/><rect x="314" y="90" width="12" height="40" fill="#D4AF37"/>
+          <line x1="360" y1="110" x2="360" y2="50" stroke="#4169E1"/><rect x="354" y="50" width="12" height="40" fill="#4169E1"/>
+          <line x1="400" y1="130" x2="400" y2="90" stroke="#D4AF37"/><rect x="394" y="95" width="12" height="30" fill="#D4AF37"/>
+          <line x1="440" y1="150" x2="440" y2="100" stroke="#D4AF37"/><rect x="434" y="105" width="12" height="35" fill="#D4AF37"/>
+          <line x1="480" y1="95" x2="480" y2="45" stroke="#4169E1"/><rect x="474" y="45" width="12" height="35" fill="#4169E1"/>
+          <line x1="520" y1="120" x2="520" y2="70" stroke="#D4AF37"/><rect x="514" y="75" width="12" height="35" fill="#D4AF37"/>
+          <line x1="560" y1="160" x2="560" y2="100" stroke="#D4AF37"/><rect x="554" y="110" width="12" height="40" fill="#D4AF37"/>
+          <line x1="600" y1="110" x2="600" y2="60" stroke="#4169E1"/><rect x="594" y="60" width="12" height="35" fill="#4169E1"/>
+          <line x1="640" y1="130" x2="640" y2="80" stroke="#D4AF37"/><rect x="634" y="90" width="12" height="30" fill="#D4AF37"/>
+          <line x1="680" y1="100" x2="680" y2="55" stroke="#D4AF37"/><rect x="674" y="60" width="12" height="30" fill="#D4AF37"/>
+          <line x1="720" y1="140" x2="720" y2="90" stroke="#4169E1"/><rect x="714" y="90" width="12" height="40" fill="#4169E1"/>
+          <line x1="760" y1="120" x2="760" y2="65" stroke="#D4AF37"/><rect x="754" y="70" width="12" height="35" fill="#D4AF37"/>
+          <line x1="800" y1="150" x2="800" y2="95" stroke="#D4AF37"/><rect x="794" y="105" width="12" height="35" fill="#D4AF37"/>
+          <line x1="840" y1="100" x2="840" y2="50" stroke="#4169E1"/><rect x="834" y="50" width="12" height="35" fill="#4169E1"/>
+          <line x1="880" y1="130" x2="880" y2="75" stroke="#D4AF37"/><rect x="874" y="80" width="12" height="35" fill="#D4AF37"/>
+          <line x1="920" y1="110" x2="920" y2="60" stroke="#D4AF37"/><rect x="914" y="65" width="12" height="30" fill="#D4AF37"/>
+          <line x1="960" y1="145" x2="960" y2="90" stroke="#4169E1"/><rect x="954" y="90" width="12" height="40" fill="#4169E1"/>
+          <line x1="1000" y1="115" x2="1000" y2="60" stroke="#D4AF37"/><rect x="994" y="65" width="12" height="35" fill="#D4AF37"/>
+          <line x1="1040" y1="95" x2="1040" y2="45" stroke="#D4AF37"/><rect x="1034" y="50" width="12" height="30" fill="#D4AF37"/>
+        </g>
+      </svg>
+      <div class="trading-note">Gold's the pair I keep coming back to — reading macro moves through price action taught me more about patience than any tutorial did.</div>
+    </div>
+  </div>
+</section>
+
+<section id="fitness">
+  <div class="wrap">
+    <div class="sec-label">04 — Fitness</div>
+    <h2 class="sec-title reveal">The one dependency that never has a version conflict.</h2>
+    <div class="fitness-wrap">
+      <div class="fitness-card reveal">
+        <span class="num">// consistency</span>
+        <h4>Non-negotiable</h4>
+        <p>Code has bugs, markets have drawdowns — the gym is the one system that just rewards showing up. It's the control variable in an otherwise chaotic schedule.</p>
+      </div>
+      <div class="fitness-card reveal">
+        <span class="num">// discipline</span>
+        <h4>Same muscle, different reps</h4>
+        <p>Debugging at midnight and grinding out a last set have the same shape: it's uncomfortable right up until it isn't, then it's just progress.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer id="contact">
+  <div class="wrap contact-inner">
+    <div class="sec-label" style="justify-content:center;">05 — Contact</div>
+    <h2>Building something? Let's talk.</h2>
+    <p>Open to collaborating on projects, freelance work, or just talking shop about code, gold, or gym splits.</p>
+    <div class="contact-links">
+      <!-- TODO: swap in your real email/social links -->
+      <a href="mailto:you@example.com" class="btn btn-primary">Email Me →</a>
+      <a href="#" class="btn btn-ghost">GitHub</a>
+      <a href="#" class="btn btn-ghost">LinkedIn</a>
+    </div>
+    <div class="foot-bottom wrap" style="padding-left:0;padding-right:0;">
+      <span>© 2026 Anindya. Built from scratch.</span>
+      <span>XAUUSD · REACT · JAVA · PYTHON</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // mobile nav toggle
+  const navToggle = document.getElementById('navToggle');
+  const navLinks = document.getElementById('navLinks');
+  navToggle.addEventListener('click', () => {
+    const isOpen = navLinks.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', isOpen);
+  });
+  navLinks.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    navLinks.classList.remove('open');
+    navToggle.setAttribute('aria-expanded', 'false');
+  }));
+
+  // scroll reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.15 });
+  revealEls.forEach(el => io.observe(el));
+</script>
+
+</body>
+</html>
